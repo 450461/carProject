@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Car project</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" href="js/datetimepicker/bootstrap-datetimepicker.css" />
+
+    <!-- Angular-multi-select-style -->
+    <link rel="stylesheet" href="js/isteven-multi-select/angular-multi-select.css" />
+
+
+    <link href="fonts/font-awesome/css/font-awesome.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="css/angular-datatables.css"/>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+
+    <link rel="stylesheet" href="css/dataTables.fixedHeader.css" />
+    <link rel="stylesheet" href="css/datatables.css" />
+    <link rel="stylesheet" href="css/responsive.dataTables.css" />
+    <link rel="stylesheet" href="css/responsive.dataTables.min.css" />
+    <link rel="stylesheet" href="css/menu.css" />
+    <link rel="stylesheet" href="css/font-awesome.css" />
+    <link rel="stylesheet" href="css/style.css" />
+
+        <!-- Angular-growl -->
+    <link rel="stylesheet" href="js/angular-growl-v2/build/angular-growl.css" />
+
+
+</head>
+
+    <!-- jQuery -->
+    <script type="text/javascript" src="js/jquery/jquery.min.js"></script>
+    <!-- datatables -->
+    <script type="text/javascript" src="js/lib/jquery.datatables.min.js"></script>
+    <script type="text/javascript" src="js/lib/angular.min.js"></script>
+    <script type="text/javascript" src="js/lib/angular-datatables.min.js"></script>
+
+    <!-- jQuery maskEdit-->
+    <script type="text/javascript" src="js/jquery/jquery.maskedinput.min.js"></script>
+
+    <!-- DataTimePicker -->
+    <script type="text/javascript" type="text/javascript" src="js/moment/moment-with-locales.min.js"></script>
+    <script type="text/javascript" type="text/javascript" src="js/datetimepicker/bootstrap-datetimepicker.js"></script>
+
+<body>
+
+<div ng-app="carProjectApp">
+    <div ng-controller="AutoCtrl as refills_area">
+
+        <div class="row text-center">
+            <div class="col-md-12">
+                <nav class="{{active}}" ng-click="$event.preventDefault()">
+                    <a href="#" class="home" ng-click="formsRouter()">Главная</a>
+                    <a href="#" class="refuel" ng-click="formsRouter('actionRefuel')">Добавить заправку</a>
+                    <!-- <a href="#" class="references" ng-click="formsRouter('actionReferences')">Справочники</a> -->
+                    <a href="#" class="options" ng-click="formsRouter('actionOptions')">Настройки и справочники</a>
+                </nav>
+            </div>
+        </div>
+
+<!-- Growl -->
+<div growl></div>
+
+        <div class="">
+
+        <!-- заголовок-->
+        <div class="form-group text-center h5">
+            <div  ng-if = "actionRefills" ">
+                <div class="col-md-8 " >
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <label class="text-center">Список последних заправок</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" >
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <label class="text-center">Фильтр по заправкам</label>
+                            <!-- <label class="text-center">Параметры</label> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if = "actionRefuel && !actionEditRefuel">
+                <div class="col-md-12 " >
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <label class="text-center">Добавление новой заправки</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if = "actionEditRefuel">
+                <div class="col-md-12 " >
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <label class="text-center">Редактирование заправки</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if = 'actionOptions'>
+                <div class="col-md-9">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <label class="text-center ">Справочники</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <label class="text-center">Параметры по умолчанию</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- заголовок-->
+
+            <!-- все заправки/ список -->
+                        <!-- <div ng-if = "actionRefills" class="row"> -->
+                        <div ng-if = "actionRefills" class="">
+                            <div class="col-md-8 text-center">
+                                <ul class="nav nav-tabs subtitle">
+                                    <li class="active">
+                                      <span></span>
+                                    </li>
+                                </ul>
+                                <div ng-if="dataIsReceiving" class="text-center"><span class="fa fa-refresh fa-spin fa-3x fa-fw"></span></div>
+                                <table datatable="" ng-if='!dataIsReceiving'
+                                        dt-options="refills_area.dtOptions" 
+                                        dt-columns="refills_area.dtColumns" 
+                                        dt-instance="refills_area.dtInstance" 
+                                        class="table table-striped"
+                                        id="refillsTable">       
+                                </table>  
+                            </div>
+                            <div class="col-md-4 text-center">
+
+
+<!-- {{defaultValues.car}} -->
+
+
+<!--     <div isteven-multi-select
+        input-model="inputCars"
+        output-model="outputCars"
+        button-label="name"
+        item-label="name"
+        tick-property="default"
+        selection-mode="single"
+        orientation="vertical"
+        max-height="250px"
+        translation="localLang" 
+    >
+        
+    </div> -->                                
+                                <!-- <hr style="width:70%"> -->
+                                <div class="form-group" >
+                                    <label for="carsSelect">Выберите машину</label>
+                                    &nbsp;
+                                    <div type="button" ng-hide="!filter.cars[0]" class="btn btn-xs btn-info" title='Сбросить фильтр с машинами' ng-click='refillsFilterCarsClear()'>
+                                        <span class="fa fa-eraser"></span>
+                                    </div>
+                                    <br>
+                                    <select 
+                                        id='carsSelect'
+                                        multiple
+                                        name="car"
+                                        style="width:70%"
+                                        ng-model="filter.cars"
+                                        ng-change="filterCars()"
+                                        <!-- <!-- ng-options="value.name for value in allCars track by value.id" --> -->
+                                    >
+                                        <!-- <option ng-repeat="value in allCars" value="{{value.id}}">{{value.name}}</option> -->
+                                        <option ng-selected="filter" value="allcars" >Все машины</option>
+                                    </select>
+                                    <!-- <button ng-click="test()">test</button>  -->
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="fuelsSelect">Выберите бензин</label>
+                                    &nbsp;
+                                    <div type='button' ng-hide="!filter.fuels[0]" class='btn btn-xs btn-info' title='Сбросить фильтр с бензинами' ng-click='refillsFilterFuelsClear()'>
+                                        <span class='fa fa-eraser'></span>
+                                    </div>
+                                    <br>
+                                    <select 
+                                        id='fuelsSelect'
+                                        multiple
+                                        size=5
+                                        name="fuel"
+                                        style="width:70%"
+                                        ng-options="value.name for value in allFuels track by value.id"
+                                        ng-model='filter.fuels'
+                                        ng-change='filterFuels()'
+                                    >
+                                        <option value="allfuels">Все виды бензина</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group" >
+                                    <label for="azsSelect">Выберите заправку</label>
+                                    &nbsp;
+                                    <div type="button" ng-hide="!filter.azss[0]" class="btn btn-xs btn-info" title='Сбросить фильтр с заправками' ng-click='refillsFilterAzssClear()'>
+                                        <span class="fa fa-eraser"></span>
+                                    </div>
+                                    <br>
+                                    <select 
+                                        id='azsSelect'
+                                        multiple
+                                        size=5
+                                        name="fuel"
+                                        style="width:70%"
+                                        ng-options="value.name+', '+value.adress+', '+value.city for value in allAzs track by value.id"
+                                        ng-model='filter.azss'
+                                        ng-change='filterAzss()'
+                                    >
+                                        <option value="allazs">Все заправки</option>
+                                    </select>
+                                </div>
+                                <button type="button" class='btn btn-sm btn-info' ng-click='refillsFilter()'>Показать</button>
+                                <!-- <button ng-click='refillsFilter()' class='btn btn-info' ng-disabled="filter.azss[0] || filter.cars[0] || filter.fuels[0]">Показать</button> -->
+
+                                <button type="button" class='btn btn-sm btn-info' ng-click='refillsFilterClear()' ng-disabled="!filter.azss[0] && !filter.cars[0] && !filter.fuels[0]" >Сбросить</button>
+                                <hr style="width:70%">
+
+                                <div class='text-left' style='padding-left:15%'>
+                                    <p>Итого</p>
+
+                                    <!-- <div class='form-group'>
+                                        <label>Заправок</label>
+                                        <label>{{statics.refills.totalCount}}</label>
+                                    </div>
+                                    <div class='form-group'>
+                                        <label>Литров залито</label>
+                                        <label>{{statics.refills.flooded_litr}}</label>
+                                    </div>                                        
+                                    <div class='form-group'>
+                                        <label>Денег потрачено</label>
+                                        <label>{{statics.refills.sum_refill}}</label>
+                                    </div> -->
+                                <table
+                                    id='staticsRefillsTable'
+                                    class="table table-striped"
+                                    style="width:80%"
+                                >
+                                    <tr>
+                                        <td>Заправок</td>                                        
+                                        <td>{{statics.refills.totalCount}}</td>
+                                    </tr> 
+                                    <tr>
+                                        <td>Литров залито</td>                                        
+                                        <td>{{statics.refills.flooded_litr}}</td>
+                                    </tr> 
+                                    <tr>
+                                        <td>Денег потрачено</td>
+                                        <td>{{statics.refills.sum_refill}}</td>
+                                    </tr>                                            
+                                </table>
+
+                                </div>
+
+                            </div>
+                        </div>
+            <!-- все заправки/ список -->
+
+            <!-- заправка/ добавление-редактирование -->
+                    <div ng-if = 'actionRefuel' class='col-md-3 text-left'>
+                            
+                            <div class="form-group">
+                                <label for="select">Выберите машину</label>
+                                <select 
+                                    class="form-control" 
+                                    name="car"
+                                    ng-options="value.name for value in allCars track by value.id"
+                                    ng-model = 'refillForm.selectedCar'
+                                    ng-disabled = 'actionEditRefuel'
+                                >
+                                </select>
+                            </div>
+
+                            <div class="form-group">             
+                                <label for="text">Выберите дату заправки</label>
+                                <div class='input-group date' id='datetimepicker2'>
+                                    <input  type='text' 
+                                            class="form-control" 
+                                            ng-model = 'refillForm.date'
+                                            />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                                <script type="text/javascript">
+                                    $(function () {
+                                        var dateNow = new Date();
+                                        $('#datetimepicker2').datetimepicker({
+                                            locale: 'ru',
+                                            format: "YYYY-MM-DD",
+                                            useCurrent: true,
+                                            showTodayButton: true,
+                                        });
+                                    });
+                                </script>
+                            </div>
+                            
+                            <div class="form-group" >
+                                <label for="select">Выберите бензин</label>
+                                <select 
+                                    class="form-control" 
+                                    name="car"
+                                    ng-options="value.name for value in allFuels track by value.id"
+                                    ng-model = 'refillForm.selectedFuel'>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" >
+                                <label for="text" > Цена за литр</label>
+                                <input type="text" id="price"
+                                    class="form-control" 
+                                    name="price_litr" 
+                                    placeholder=""
+                                    ng-required="required"
+                                    ng-model = 'refillForm.price_litr'
+                                />
+                            </div>
+                            <script>
+                                $(function(){
+                                  $("#price").mask("99.99",{placeholder:" "});
+                                })
+                            </script>
+                            
+                            <div class="form-group">
+                                <label for="text">Литров залито</label>
+                                <input type="text" class="form-control" name="flooded"  id='zalito' 
+                                        ng-Change = 'calculateSumm()'
+                                        placeholder=""
+                                        ng-model = 'refillForm.zalito'
+                                        />
+                            </div>
+                            <script>
+                                $(function(){        
+                                  $("#zalito").mask("99.99?9",{placeholder:" "});
+                                });
+                            </script>
+
+                            
+                            <div class="form-group" >
+                                <label for="text">Сумма заправки</label>
+                                <input type="text" id='summ' class="form-control" name="summa"  placeholder=""
+                                ng-model = 'refillForm.summa'
+                                >
+                            </div>
+                            
+                            <div class="form-group" >
+                                <label for="select">Выберите заправку</label>
+                                <select 
+                                    class="form-control" 
+                                    name="car"
+                                    ng-options="value.name for value in allAzs track by value.id"
+                                    ng-model = 'refillForm.selectedAzs'>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" >
+                                <label for="text">Комментарий</label>
+                                <textarea rows='3' id='' class="form-control" name="comment" 
+                                        ng-model = 'refillForm.comment'>
+                                </textarea>
+                            </div>
+                            
+                            <button type="button"
+                                class='btn btn-sm btn-info'
+                                ng-if="actionRefuel && !actionEditRefuel" 
+                                ng-click="saveRefill(refillForm)" >
+                                Сохранить
+                            </button>     
+                            &nbsp;
+                            <button type="button"
+                                id=''
+                                class='btn btn-sm btn-info'
+                                ng-if = "actionEditRefuel"
+                                ng-click="saveEditedRefill(refillForm)" >
+                                Сохранить изменения
+                            </button>
+
+                            <button type="button"
+                                class='btn btn-sm btn-info'
+                                ng-click="cancelRefill(refillForm)" >
+                                Отменить
+                            </button>
+                        
+                    </div>
+           <!--  заправка/ добавление-редактирование     -->                 
+
+
+            <!-- настройки --> 
+                    <div ng-if = 'actionOptions' >
+
+            
+
+            <!-- Справочники -->
+                    <!-- <div class='row'> -->
+                    <div class='col-md-9'>
+
+                        <div class="col-md-4">
+                            <div class="form-group text-left">
+                                <label>Машины</label>
+                                <select 
+                                    class="form-control" 
+                                    name="car"
+                                    size=7
+                                    ng-options="value.name for value in carsList track by value.id"
+                                    ng-model = 'optionsForm.carsList'
+                                    ng-disabled = 'actionEditRefuel'
+                                    ng-click="optionsOneInstance('car', optionsForm.carsList)"
+                                    >
+                                    <option ng-if="false"></option>
+                                </select>
+
+                                <div class="form-group text-left">
+                                    <a type='button' class="icon-wrap iw-2x">
+                                        <i class="fa fa-plus fa-2x " aria-hidden="true" title = 'Добавить машину' 
+                                            ng-click='showhideOptionsForm("car")'>
+                                        </i>
+                                    </a>
+                                    <a type='button' class="icon-wrap iw-2x" ng-disabled="!optionsForm.oneInstance" ng-click='showhideOptionsForm("carEdit")'>
+                                        <i class="fa fa-pencil-square-o fa-2x"    aria-hidden="true" title = 'Редактировать {{optionsForm.oneInstance.name}}'>
+                                        </i>
+                                    </a>
+                                    <a type='button' class="icon-wrap iw-2x"><i class="fa fa-times fa-2x" aria-hidden="true" title = 'Удалить {{optionsForm.oneInstance.name}}'
+                                        ng-click="removeFromOptions('car', optionsForm.oneInstance)"
+                                        ng-disabled=" true"
+                                    ></i></a>
+                            <!-- new -->
+                                    <div ng-if='options.car.new || options.car.edit'>
+                                        <div class="form-group">
+                                            <div class= 'text-left'>
+                                                <label ng-if='options.car.new'>Новая машина:</label>   
+                                                <label ng-if='options.car.edit'>Редактировать машину:</label>   
+                                            </div> 
+                                        </div> 
+                                        <div class="form-group">
+                                            <div class="input-group input-group-sm">
+                                                    <input type='text' class='form-control' ng-model="optionsForm.oneInstance.model" >
+                                                    <span class='input-group-addon'>Производитель</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <input type='text' class = "form-control" ng-model="optionsForm.oneInstance.name">
+                                                <span class="input-group-addon">
+                                                       <div class='font_in_input'>Модель</div>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <input type='text' class = "form-control input-sm" ng-model="optionsForm.oneInstance.color">
+                                                <span class="input-group-addon">
+                                                       <div class='font_in_input'>Цвет</div>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <input type='text' class = "form-control input-sm" ng-model="optionsForm.oneInstance.engine">
+                                                <span class="input-group-addon">
+                                                       <div class='font_in_input'>Двигатель</div>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <input type='text' class = "form-control input-sm" ng-model="optionsForm.oneInstance.power">
+                                                <span class="input-group-addon">
+                                                       <div class='font_in_input'>Мощность</div>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <input type='text' class = "form-control input-sm" ng-model="optionsForm.oneInstance.gearbox">
+                                                <span class="input-group-addon">
+                                                       <div class='font_in_input'>Кпп</div>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <input type='text' class = "form-control input-sm" ng-model="optionsForm.oneInstance.date_release">
+                                                <span class="input-group-addon">
+                                                       <div class='font_in_input'>Дата выпуска</div>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <input type='text' class = "form-control input-sm" ng-model="optionsForm.oneInstance.date_purchase">
+                                                <span class="input-group-addon">
+                                                       <div class='font_in_input'>Дата покупки</div>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <input type='text' class = "form-control input-sm" ng-model="optionsForm.oneInstance.date_sale">
+                                                <span class="input-group-addon">
+                                                       <div class='font_in_input'>Дата продажи</div>
+                                                </span>
+                                            </div>
+                                        </div>
+                                 
+                                        <div class="form-group">
+                                            <div class= 'text-right'>
+                                            
+    <!--                                     <button type="button" class="btn-xs btn-default" ng-click='newFromOptions("car", optionsForm.carsList)' ng-if='options.car.new' >
+                                                Сохранить
+                                            </button>                                     
+                                            <button type="button" class="btn-xs btn-default" ng-click='newFromOptions("car", optionsForm.carsList)' ng-if='options.car.edit' >
+                                                Сохранить
+                                            </button>
+                                            <button type="button" class="btn-xs btn-default" ng-click='hideOptionsForm()'>
+                                                Отменить
+                                            </button>-->
+                                            <i class="fa fa-2x fa-floppy-o" aria-hidden="true" title = 'Сохранить {{optionsForm.oneInstance.name}}' 
+                                                ng-click='newFromOptions("car", optionsForm.oneInstance)' ng-if='options.car.new'></i>
+                                            <i class="fa fa-2x fa-floppy-o" aria-hidden="true" title = 'Сохранить {{optionsForm.oneInstance.name}}' 
+                                                ng-click='newFromOptions("carEdit", optionsForm.oneInstance)' ng-if='options.car.edit'></i>
+                                            &nbsp
+                                            <i class="fa fa-window-close fa-2x" aria-hidden="true" title = 'Отменить ' ng-click='hideOptionsForm(true)'></i>
+                                            </div>
+                                        </div>
+                                    </div>    
+                            <!-- new -->
+
+                                <!-- info -->
+                                <div ng-if='options.car.info'>
+                                    <!-- <div class="form-group"> -->
+
+                                        <div class="form-group">
+                                                <label>Данные по этой машине:</label>
+                                            <img src="/images/cars/{{optionsForm.oneInstance.name | lowercase}}.jpg" class="img-thumbnail" style="object-fit: cover" width="100%" height="50px" />
+                                            <!-- <img src="/images/cars/{{refillsFilterCar || defaultValues.car}}.jpg" class="img-thumbnail" style="object-fit: cover" width="70%" height="50px" /> -->
+                                        </div>
+
+
+                                        <div class="table-responsive">
+                                          <table class="table table-striped">                                          
+                                            <tr class="info">
+                                                <td>ID</td>
+                                                <td>{{optionsForm.oneInstance.id}}</td>
+                                            </tr>
+                                            <tr ng-show="optionsForm.oneInstance.model">
+                                                <td>Производитель</td>
+                                                <td>{{optionsForm.oneInstance.model}}</td>
+                                            </tr>                                          
+                                            <tr>                                          
+                                            <tr ng-show="optionsForm.oneInstance.name">
+                                                <td>Модель</td>
+                                                <td><strong>{{optionsForm.oneInstance.name}}</strong></td>
+                                            </tr>
+                                            <tr ng-show="optionsForm.oneInstance.color">
+                                                <td>Цвет</td>
+                                                <td>{{optionsForm.oneInstance.color}}</td>
+                                            </tr>
+                                            <tr ng-show="optionsForm.oneInstance.engine">
+                                                <td>Двигатель</td>
+                                                <td>{{optionsForm.oneInstance.engine}}</td>
+                                            </tr>
+                                            <tr ng-show="oneInstance.power">
+                                                <td>Мощность</td>
+                                                <td>{{optionsForm.oneInstance.power}}</td>
+                                            </tr>
+                                            <tr ng-show="optionsForm.oneInstance.gearbox">
+                                                <td>Коробка передач</td>
+                                                <td>{{optionsForm.oneInstance.gearbox}}</td>
+                                            </tr>
+                                            <tr ng-show="optionsForm.oneInstance.date_release">
+                                                <td>Дата выпуска</td>
+                                                <td>{{optionsForm.oneInstance.date_release}}</td>
+                                            </tr>
+                                            <tr ng-show="optionsForm.oneInstance.date_purchase">
+                                                <td>Дата покупки</td>
+                                                <td>{{optionsForm.oneInstance.date_purchase}}</td>
+                                            </tr>
+                                            <tr ng-show="optionsForm.oneInstance.date_sale">
+                                                <td>Дата продажи</td>
+                                                <td>{{optionsForm.oneInstance.date_sale}}</td>
+                                            </tr>
+
+                                          </table>
+                                        </div>
+
+                                    <!-- </div> -->
+                                </div>
+
+                                <!-- info -->
+
+                                </div>                                                         
+                            </div>
+                        </div>
+    
+
+                        <div class="col-md-4">
+                            <div class="form-group text-left">
+                                <label>Заправки</label>
+                                <select 
+                                    class="form-control" 
+                                    name="car"
+                                    size=7
+                                    ng-options="value.name+', '+value.adress+', '+value.city for value in allAzs track by value.id"
+                                    ng-model = 'optionsForm.azsList'
+                                    ng-click="optionsOneInstance('azs', optionsForm.azsList)"
+                                    >
+                                    <option ng-if="false"></option>
+                                </select>
+                                <div class="form-group text-left">
+                                    <a type='button' class="icon-wrap iw-2x"><i class="fa fa-plus fa-2x" aria-hidden="true" title = 'Добавить АЗС' ng-click='showhideOptionsForm("azs")'></i></a>
+                                    <a type='button' class="icon-wrap iw-2x"><i class="fa fa-pencil-square-o fa-2x" aria-hidden="true" title = 'Редактировать {{optionsForm.oneInstance.name}}'
+                                        ng-click='showhideOptionsForm("azsEdit")'
+                                    ></i></a>
+                                    <a type='button' class="icon-wrap iw-2x"><i class="fa fa-times fa-2x" aria-hidden="true" title = 'Удалить {{optionsForm.oneInstance.name}}'
+                                        ng-click='removeFromOptions("azs", optionsForm.oneInstance)'
+                                    ></i></a>
+                                    <br>
+                                    <!-- new -->
+                                    <div ng-if='options.azs.new || options.azs.edit'>
+                                        <div class="form-group">
+                                            <div class='text-left'>
+                                                <label ng-if='options.azs.new'>Новая заправка:</label>   
+                                                <label ng-if='options.azs.edit'>Редактировать заправку:</label>   
+                                            </div>
+                                        </div>
+                                        <div class="text-right form-group">
+                                            <div class="input-group">
+                                                <input type='text' class = "form-control input-sm"  ng-model="optionsForm.oneInstance.name">
+                                                <span class="input-group-addon font_in_input">
+                                                    Название
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="text-right form-group">
+                                            <div class="input-group">
+                                                <input type='text' class = "form-control input-sm"  ng-model="optionsForm.oneInstance.adress">
+                                                <span class="input-group-addon font_in_input">
+                                                    Адрес
+                                                </span>
+                                            </div>
+                                        </div 
+
+                                        <br>
+                                        <div class= 'text-right'>
+                                            <i class="fa fa-2x fa-floppy-o" aria-hidden="true" title = 'Сохранить {{optionsForm.oneInstance.name}}' ng-click='newFromOptions("azs", optionsForm.oneInstance)' ng-if='options.azs.new'></i>
+                                            <i class="fa fa-2x fa-floppy-o" aria-hidden="true" title = 'Сохранить {{optionsForm.oneInstance.name}}' ng-click='newFromOptions("azsEdit", optionsForm.oneInstance)' ng-if='options.azs.edit'></i>
+                                            &nbsp
+                                            <i class="fa fa-window-close fa-2x" aria-hidden="true" title = 'Отменить ' ng-click='hideOptionsForm(true)'></i>
+                                        </div>
+                                    </div>    
+                                <!-- new -->
+
+                                <!-- info -->
+                                <div ng-if='options.azs.info'>
+                                    <div class="form-group">
+                                        <div class='text-left'>
+                                            <label>Данные по этой заправке:</label>
+                                        </div>
+                                    </div>
+                                        <div class="table-responsive">
+                                          <table class="table table-striped">
+
+                                            <tr class="info">
+                                                <td>ID</td>
+                                                <td>{{optionsForm.oneInstance.id}}</td>
+                                            </tr>
+                                            <tr>
+                                                <!-- <td colspan='2'><strong>{{optionsForm.oneInstance.name}}</strong></td> -->
+                                                <td>Брэнд</td>
+                                                <td>{{optionsForm.oneInstance.name}}</td>
+                                            </tr>
+                                            <tr>
+                                                <!-- <td colspan='2'><strong>{{optionsForm.oneInstance.name}}</strong></td> -->
+                                                <td>Местоположение</td>
+                                                <td>{{optionsForm.oneInstance.city}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Адрес</td>
+                                                <td>{{optionsForm.oneInstance.adress}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Кол-во заправок</td>
+                                                <td>{{optionsForm.summFromRefills.count}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Денег потрачено</td>
+                                                <td>{{optionsForm.summFromRefills.sum_refill | currency:'RUB '}}</td>
+                                            </tr>
+
+                                          </table>
+                                        </div>
+
+                                    <!-- </div> -->
+                                </div>
+
+                                <!-- info -->
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group text-left">
+                                <label >Топливо</label>
+                                <select 
+                                    class="form-control" 
+                                    name="car"
+                                    size=7
+                                    ng-options="value.name for value in fuelsList track by value.id"
+                                    ng-model = 'optionsForm.fuelsList'
+                                    ng-click="optionsOneInstance('fuel', optionsForm.fuelsList)"
+                                    >
+                                    <option ng-if="false"></option>
+                                </select>
+                                <div class="form-group text-left">
+                                    <a type='button' class="icon-wrap iw-2x"><i class="fa fa-plus fa-2x" aria-hidden="true" title = 'Добавить новый вид бензина ' 
+                                        ng-click='showhideOptionsForm("fuel")'
+                                    ></i></a>
+                                    <a type='button' class="icon-wrap iw-2x"><i class="fa fa-pencil-square-o fa-2x" aria-hidden="true" title = 'Редактировать {{optionsForm.fuelsList.name}}'
+                                        ng-click='showhideOptionsForm("fuelEdit")'
+                                    ></i></a>
+                                    <a type='button' class="icon-wrap iw-2x"><i class="fa fa-times fa-2x" aria-hidden="true" title = 'Удалить {{optionsForm.fuelsList.name}}'
+                                        ng-click='removeFromOptions("fuel", optionsForm.fuelsList)'
+                                    ></i></a>
+                                <br>
+                                <!-- new -->
+                                <div ng-if='options.fuel.new || options.fuel.edit'>
+                                    <div class="form-group">
+                                        <div class= 'text-center'>
+                                            <label ng-if='options.fuel.new'>Новый вид бензина</label>   
+                                            <label ng-if='options.fuel.edit'>Редактировать этот вид бензина</label>   
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group">
+                                        <input type='text' class = "form-control input-sm" ng-model="optionsForm.fuelsList.name">
+                                    </div>
+                                    <div class= 'text-right'>
+                                        <i class="fa fa-2x fa-floppy-o" aria-hidden="true" title = 'Сохранить {{optionsForm.fuelsList.name}}' ng-click='newFromOptions("fuel", optionsForm.fuelsList)' ng-if='options.fuel.new'></i>
+                                        <i class="fa fa-2x fa-floppy-o" aria-hidden="true" title = 'Сохранить {{optionsForm.fuelsList.name}}' ng-click='newFromOptions("fuelEdit", optionsForm.fuelsList)' ng-if='options.fuel.edit'></i>
+                                        &nbsp
+                                        <i class="fa fa-window-close fa-2x" aria-hidden="true" title = 'Отменить ' ng-click='hideOptionsForm(true)'></i>
+                                    </div>
+                                </div>    
+                                <!-- new -->
+
+                                <!-- info -->
+                                <div ng-if='options.fuel.info'>
+
+                                        <div class="form-group">
+                                            <div class='text-left'>
+                                                <label>Данные по этому бензину:</label>
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive">
+                                          <table class="table table-striped">
+                                            <tr class="info">
+                                                <td>ID</td>
+                                                <td>{{optionsForm.oneInstance.id}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Количество заправок</td>
+                                                <td>{{optionsForm.summFromRefills.count}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Денег потрачено</td>
+                                                <td>{{optionsForm.summFromRefills.sum_refill  | currency:'RUB '}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Последняя цена,<br> на {{optionsForm.summFromRefills.lastFuelPrice.data}}</td>
+                                                <td>{{optionsForm.summFromRefills.lastFuelPrice.price_litr}}</td>
+                                            </tr>
+
+                                          </table>
+                                        </div>
+
+                                    <!-- </div> --> 
+                                </div>
+                                <!-- info -->
+
+                                </div>
+                            </div>
+                        </div>
+
+                            
+
+                    </div>
+            <!-- Справочники -->
+
+            <!-- параметры по умолчанию -->
+                <div class='col-md-3'>
+
+                    <div class="text-left"> 
+                        <div class="col-md-6">
+                            <div class="form-group" > 
+                                <label for="select" class=''>Машина</label>
+                                <select 
+                                    class="form-control input-xs " 
+                                    name="car"
+                                    ng-options="value.name for value in allCars track by value.id"
+                                    ng-model = 'optionsForm.selectedCar'
+                                    ng-disabled = 'actionEditRefuel'
+                                >
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group" >
+                                <label for="select" class=''>Бензин</label>
+                                <select 
+                                    class="form-control input-xs " 
+                                    name="car"
+                                    ng-options="value.name for value in allFuels track by value.id"
+                                    ng-model = 'optionsForm.selectedFuel'>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group" >
+                                <label for="select" class=''>Заправка</label>
+                                <select 
+                                    class="form-control  input-xs" 
+                                    name="car"
+                                    ng-options="value.name for value in allAzs track by value.id"
+                                    ng-model = 'optionsForm.selectedAzs'>
+                                </select>
+                            </div>
+
+                            <a type='button' class="icon-wrap iw-2x">
+                                <i class="fa fa-floppy-o fa-2x" aria-hidden="true" title = 'Сохранить настройки по умолчанию' ng-click='saveOptions(optionsForm)'></i>
+                            </a>
+
+                            <a type='button' class="icon-wrap iw-2x">
+                                <i class="fa fa-undo fa-2x" aria-hidden="true" title = 'Отменить изменения' ng-click='cancelOptions()'></i>
+                            </a>
+                        
+                        </div>
+
+                    </div>
+                </div>
+                
+            <!-- настройки --> 
+                </div>
+
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+
+	<script type="text/javascript" src="/js/controllers/carProjectController.js"></script>
+
+    <!-- Angular-growl -->
+    <script type="text/javascript" src="/js/angular-growl-v2/build/angular-growl.js"></script>
+
+    <!-- Angular-multi-select -->
+    <!-- <script type="text/javascript" src="js/isteven-multi-select/angular-multi-select.js"></script> -->
+
+</html>
